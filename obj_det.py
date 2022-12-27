@@ -2,6 +2,8 @@
 
 import os, sys, time
 import cv2
+import numpy as np
+import matplotlib.pyplot as plt
 from edge_impulse_linux.image import ImageImpulseRunner
 
 # Impulse Runner Setup
