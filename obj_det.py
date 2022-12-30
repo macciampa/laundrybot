@@ -98,7 +98,7 @@ while True:
     if k != -1:
         break
 
-    # Calculate framrate
+    # Calculate framerate
     frame_time = (cv2.getTickCount() - timestamp) / cv2.getTickFrequency()
     fps = 1 / frame_time
 
