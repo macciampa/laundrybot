@@ -2,6 +2,7 @@
 *.jpg
 *.eim
 *.jpg
+__pycache__
 
 ## Temporary files
 *~
