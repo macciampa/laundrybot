@@ -4,7 +4,7 @@ import numpy as np
 import imutils
 
 
-## Corner Detection
+### Corner Detection ###
 def corner_detect(img):
     # Convert to grayscale
     img = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
@@ -60,7 +60,7 @@ def corner_detect(img):
 
 
 
-## Classify Image
+### Classify Image ###
 def img_classification(img, runner):
     # Convert to RGB and encapsulate raw values into array for model input
     img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -104,10 +104,9 @@ def img_classification(img, runner):
 
 
 
-## General Lay Flat Algorithm
-def lay_flat(img):
-    # Find lowest point
-
+### Lay Flat ###
+def general_lay_flat(img):
+    ## Find lowest point
     # Convert to grayscale
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     # Edge Detection
@@ -117,26 +116,24 @@ def lay_flat(img):
     if np.any(indices):
         coords = list(zip(indices[1], indices[0]))
         max_y = np.argmax(indices[0])
-
     # Draw circles at POIs
     if np.any(indices):
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         img = cv2.circle(img, coords[max_y], 10, (0,0,255), 2)
-
     return img
 
 
 
-## Pants
-def pants_lay_flat(img):
-    # Grab waist
+### Pants ###
+def lay_flat_pants(img):
+    ## Grab waist
     tl, tr, bl, br = corner_detect(img)
     cv2.circle(img, tl, 7, (0, 0, 255), -1)
     cv2.circle(img, tr, 7, (0, 0, 255), -1)
     return img
 
 def pants_fold1(img):
-    # Fold legs together
+    ## Fold legs together
     tl, tr, bl, br = corner_detect(img)
     cv2.circle(img, bl, 7, (0, 0, 255), -1)
     cv2.circle(img, tl, 7, (0, 0, 255), -1)
@@ -145,7 +142,7 @@ def pants_fold1(img):
     return img
 
 def pants_fold2(img):
-    # Fold into quarters
+    ## Fold into quarters
     tl, tr, bl, br = corner_detect(img)
     cv2.circle(img, bl, 7, (0, 0, 255), -1)
     cv2.circle(img, tl, 7, (0, 0, 255), -1)
@@ -155,4 +152,26 @@ def pants_fold2(img):
     cv2.circle(img, mid, 7, (0, 0, 255), -1)
     cv2.circle(img, q1, 7, (0, 0, 255), -1)
     cv2.circle(img, q3, 7, (0, 0, 255), -1)
+    return img
+
+
+
+### Long-Sleeve Shirts (LSS) ###
+def lay_flat_lss(img):
+    ## Grab waist
+    tl, tr, bl, br = corner_detect(img)
+    cv2.circle(img, tl, 7, (0, 0, 255), -1)
+    cv2.circle(img, tr, 7, (0, 0, 255), -1)
+    return img
+
+def lss_fold1(img):
+    ## Grab midpoint of waist and collar
+    return img
+
+def lss_fold2(img):
+    ## Grab sleeves
+    return img
+
+def lss_fold3(img):
+    ## Fold into thirds
     return img

@@ -4,7 +4,7 @@ import cv2
 from edge_impulse_linux.image import ImageImpulseRunner
 
 
-## Initialization
+### Initialization ###
 def init_bot():
     # Impulse Runner Setup
     model_file = "modelfile.eim"             # Trained ML model from Edge Impulse
@@ -31,7 +31,7 @@ def init_bot():
 
 
 
-## Calculate and display Framerate
+### Calculate and display Framerate ###
 def disp_framerate(img, fps, timestamp):
     # Draw framerate on frame
     cv2.putText(img, 
