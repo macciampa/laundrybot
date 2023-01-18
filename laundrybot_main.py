@@ -18,7 +18,7 @@ while True:
     # State Machine
     match curr_mode:
         case "lay_flat":
-            img = generallay_flat(img)
+            img = general_lay_flat(img)
             next_mode  = "classify"
             avg_arr    = aa_size*[0]
             last_label = ""
@@ -26,14 +26,17 @@ while True:
             img, label, val = img_classification(img, runner)
             if label == last_label:
                 avg_arr = np.append(avg_arr[1:aa_size],[val])
-                if np.average(avg_arr) > 0.9:
+                if np.average(avg_arr) > 0.4:
                     match label:
                         case 'pants':
-                            next_mode = "pants_lay_flat"
-                        case 'ls_shirt_glfa':
+                            next_mode = "lay_flat_pants"
+                        case 'lss':
                             next_mode = "lay_flat_lss"
+                else:
+                    next_mode = "classify"
             else:
                 avg_arr = aa_size*[0]
+                next_mode = "classify"
             last_label = label
         case "lay_flat_pants":
             img = lay_flat_pants(img)
