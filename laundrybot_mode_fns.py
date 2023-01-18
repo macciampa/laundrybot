@@ -104,8 +104,10 @@ def img_classification(img, runner):
 
 
 
-## Lay Flat (find lowest point)
-def lay_flat(img, runner):
+## General Lay Flat Algorithm
+def lay_flat(img):
+    # Find lowest point
+
     # Convert to grayscale
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     # Edge Detection
@@ -126,7 +128,15 @@ def lay_flat(img, runner):
 
 
 ## Pants
-def pants_fold1_legs_togthr(img, runner):
+def pants_lay_flat(img):
+    # Grab waist
+    tl, tr, bl, br = corner_detect(img)
+    cv2.circle(img, tl, 7, (0, 0, 255), -1)
+    cv2.circle(img, tr, 7, (0, 0, 255), -1)
+    return img
+
+def pants_fold1(img):
+    # Fold legs together
     tl, tr, bl, br = corner_detect(img)
     cv2.circle(img, bl, 7, (0, 0, 255), -1)
     cv2.circle(img, tl, 7, (0, 0, 255), -1)
@@ -134,7 +144,8 @@ def pants_fold1_legs_togthr(img, runner):
     cv2.circle(img, tr, 7, (0, 0, 255), -1)
     return img
 
-def pants_fold2_quarters(img, runner):
+def pants_fold2(img):
+    # Fold into quarters
     tl, tr, bl, br = corner_detect(img)
     cv2.circle(img, bl, 7, (0, 0, 255), -1)
     cv2.circle(img, tl, 7, (0, 0, 255), -1)

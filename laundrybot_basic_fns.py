@@ -27,15 +27,7 @@ def init_bot():
     cam.set(3,640)
     cam.set(4,360)
 
-    # Create dispatch table for modes
-    modes = {
-        "lay_flat" : lay_flat,
-        "classify": img_classification,
-        "pants_fold1" : pants_fold1_legs_togthr,
-        "pants_fold2" :pants_fold2_quarters
-    }
-
-    return cam, runner, modes
+    return cam, runner
 
 
 
