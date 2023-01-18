@@ -33,15 +33,7 @@ def init_bot():
 
 ### Calculate and display Framerate ###
 def disp_framerate(img, fps, timestamp):
-    # Draw framerate on frame
-    cv2.putText(img, 
-                "FPS: " + str(round(fps, 2)), 
-                (0, 12),
-                cv2.FONT_HERSHEY_PLAIN,
-                1,
-                (255,0,0))
-    
-    # Calculate framerate
+    cv2.putText(img,"FPS: "+str(round(fps, 2)),(0, 12),cv2.FONT_HERSHEY_PLAIN,1,(0,0,0))
     frame_time = (cv2.getTickCount() - timestamp) / cv2.getTickFrequency()
     fps = 1 / frame_time
     return img, fps

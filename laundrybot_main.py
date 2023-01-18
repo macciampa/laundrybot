@@ -6,7 +6,8 @@ import numpy as np
 
 ## Initialize model and webcam
 cam, runner = init_bot()
-aa_size     = 10   # size of average array for classification
+aa_size     = 5    # size of average array for classification
+conf_ratio  = 0.4  # confidence ratio for classification
 fps         = 0
 curr_mode   = "lay_flat"
 
@@ -24,9 +25,11 @@ while True:
             last_label = ""
         case "classify":
             img, label, val = img_classification(img, runner)
+            cv2.putText(img,label,(0, img.shape[0]-20),cv2.FONT_HERSHEY_PLAIN,1,(0,0,0))            # Draw predicted label on bottom of preview
+            cv2.putText(img,str(round(val,2)),(0,img.shape[0]-2),cv2.FONT_HERSHEY_PLAIN,1,(0,0,0))  # Draw predicted class's confidence score (probability)
             if label == last_label:
                 avg_arr = np.append(avg_arr[1:aa_size],[val])
-                if np.average(avg_arr) > 0.4:
+                if np.average(avg_arr) > conf_ratio:
                     match label:
                         case 'pants':
                             next_mode = "lay_flat_pants"
@@ -60,6 +63,7 @@ while True:
     # Show the frame
     img, fps = disp_framerate(img, fps, timestamp)   # Calculate and display framerate
     cv2.imshow('LaundryBotCam',img)
+    cv2.setWindowTitle('LaundryBotCam',curr_mode)
 
     # Check for user input
     match cv2.waitKey(1):

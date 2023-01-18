@@ -72,10 +72,8 @@ def img_classification(img, runner):
     except Exception as e:
         print("ERROR: Could not perform inference")
         print("Exception:", e)
-    # Display predictions and timing data
-#    print("Output:", res)
+#    print("Output:", res)    # Display predictions and timing data
 
-    # Display prediction on preview
     if res is not None:
         # Find label with the highest probability
         predictions = res['result']['classification']
@@ -85,20 +83,6 @@ def img_classification(img, runner):
             if predictions[p] > max_val:
                 max_val = predictions[p]
                 max_label = p
-        # Draw predicted label on bottom of preview
-        cv2.putText(img,
-                    max_label,
-                    (0, img.shape[0] - 20),
-                    cv2.FONT_HERSHEY_PLAIN,
-                    1,
-                    (255,0,0))
-        # Draw predicted class's confidence score (probability)
-        cv2.putText(img,
-                    str(round(max_val, 2)),
-                    (0, img.shape[0] - 2),
-                    cv2.FONT_HERSHEY_PLAIN,
-                    1,
-                    (255,0,0))
         
     return img, max_label, max_val
 
@@ -108,17 +92,14 @@ def img_classification(img, runner):
 def general_lay_flat(img):
     ## Find lowest point
     # Convert to grayscale
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    img_fl = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     # Edge Detection
-    img = cv2.GaussianBlur(img, (7,7), 0) 
-    img = cv2.Canny(img, 80, 200) # Canny Edge Detection
-    indices = np.where(img == [255])  # Why are these backwards????
+    img_fl = cv2.GaussianBlur(img_fl, (7,7), 0) 
+    img_fl = cv2.Canny(img_fl, 80, 200) # Canny Edge Detection
+    indices = np.where(img_fl == [255])  # Why are these backwards????
     if np.any(indices):
         coords = list(zip(indices[1], indices[0]))
         max_y = np.argmax(indices[0])
-    # Draw circles at POIs
-    if np.any(indices):
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         img = cv2.circle(img, coords[max_y], 10, (0,0,255), 2)
     return img
 
