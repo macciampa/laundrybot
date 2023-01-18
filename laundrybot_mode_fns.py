@@ -100,7 +100,7 @@ def img_classification(img, runner):
                     1,
                     (255,0,0))
         
-    return img
+    return img, max_label, max_val
 
 
 

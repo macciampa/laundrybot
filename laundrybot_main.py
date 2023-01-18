@@ -2,9 +2,11 @@
 from laundrybot_basic_fns import *
 from laundrybot_mode_fns import *
 import cv2
+import numpy as np
 
 ## Initialize model and webcam
 cam, runner = init_bot()
+aa_size = 10   # size of average array for classification
 
 ## Start webcam
 fps = 0
@@ -19,11 +21,22 @@ while True:
     match curr_mode:
         case "lay_flat":
             img = lay_flat(img)
-            next_mode = "classify"
-            avg_arr = 10*[0]
+            next_mode  = "classify"
+            avg_arr    = aa_size*[0]
+            last_label = ""
         case "classify":
-            img = img_classification(img, runner)
-            next_mode = "pants_lay_flat"
+            img, label, val = img_classification(img, runner)
+            if label == last_label:
+                avg_arr = np.append(avg_arr[1:aa_size],[val])
+                if np.average(avg_arr) > 0.9:
+                    match label:
+                        case 'pants':
+                            next_mode = "pants_lay_flat"
+                        case 'ls_shirt_glfa':
+                            next_mode = "pants_lay_flat"
+            else:
+                avg_arr = aa_size*[0]
+            last_label = label
         case "pants_lay_flat":
             img = pants_lay_flat(img)
             next_mode = "pants_fold1"
@@ -44,6 +57,7 @@ while True:
             curr_mode = next_mode
         case 113: # q
             break
+
 
 # End
 cam.release()
