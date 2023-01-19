@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 from laundrybot_basic_fns import *
 from laundrybot_mode_fns import *
-import cv2
-import numpy as np
 
 ## Initialize model and webcam
 cam, runner = init_bot()
