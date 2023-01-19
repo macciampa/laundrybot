@@ -20,7 +20,7 @@ while True:
     # State Machine
     match curr_mode:
         case "lay_flat":
-            img = general_lay_flat(img)
+            img = general_lay_flat(img, view_edge)
             next_mode  = "classify"
             avg_arr    = aa_size*[0]
             last_label = ""
@@ -59,6 +59,9 @@ while True:
             next_mode = "lss_fold2"
         case "lss_fold2":
             img = lss_fold2(img, view_edge)
+            next_mode = "lss_fold3"
+        case "lss_fold3":
+            img = lss_fold3(img, view_edge)
             next_mode = "lay_flat"
 
     # Show the frame
