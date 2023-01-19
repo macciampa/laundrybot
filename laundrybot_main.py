@@ -9,7 +9,8 @@ cam, runner = init_bot()
 aa_size     = 5    # size of average array for classification
 conf_ratio  = 0.4  # confidence ratio for classification
 fps         = 0
-curr_mode   = "lay_flat"
+curr_mode   = "lss_fold1"
+view_edge   = False  # view edge detect instead of normal image
 
 while True:
     timestamp = cv2.getTickCount()   # Get timestamp for calculating framerate
@@ -42,22 +43,22 @@ while True:
                 next_mode = "classify"
             last_label = label
         case "lay_flat_pants":
-            img = lay_flat_pants(img)
+            img = lay_flat_pants(img, view_edge)
             next_mode = "pants_fold1"
         case "pants_fold1":
-            img = pants_fold1(img)
+            img = pants_fold1(img, view_edge)
             next_mode = "pants_fold2"
         case "pants_fold2":
-            img = pants_fold2(img)
+            img = pants_fold2(img, view_edge)
             next_mode = "lay_flat"
         case "lay_flat_lss":
-            img = lay_flat_lss(img)
+            img = lay_flat_lss(img, view_edge)
             next_mode = "lss_fold1"
         case "lss_fold1":
-            img = lss_fold1(img)
+            img = lss_fold1(img, view_edge)
             next_mode = "lss_fold2"
         case "lss_fold2":
-            img = lss_fold2(img)
+            img = lss_fold2(img, view_edge)
             next_mode = "lay_flat"
 
     # Show the frame
@@ -69,6 +70,8 @@ while True:
     match cv2.waitKey(1):
         case 32: # Spacebar
             curr_mode = next_mode
+        case 101: # e
+            view_edge = not view_edge
         case 113: # q
             break
 

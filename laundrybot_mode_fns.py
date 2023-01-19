@@ -4,26 +4,26 @@ import numpy as np
 import imutils
 
 
+### Edge Detection ###
+def edge_detect(img):
+    img_e = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    img_e = cv2.GaussianBlur(img_e, (7,7), 0) 
+    img_e = cv2.Canny(img_e, 80, 200)
+    return img_e
+
+
+
 ### Corner Detection ###
 def corner_detect(img):
-    # Convert to grayscale
-    img = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-
-    # Edge detection
-    img = cv2.GaussianBlur(img, (7,7), 0) 
-    img = cv2.Canny(img,80,200)
-
-    # Corner Detection
-    img = np.float32(img)
-    dst = cv2.cornerHarris(img,30,13,0.04)
-    #result is dilated for marking the corners, not important
-    dst = cv2.dilate(dst,None)
-    # Threshold for an optimal value, it may vary depending on the image.
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    img_e = edge_detect(img)
+    img_e = np.float32(img_e)
+    dst = cv2.cornerHarris(img_e,30,13,0.04)
+    dst = cv2.dilate(dst,None)    # result is dilated for marking the corners, not important
+    img_e = cv2.cvtColor(img_e, cv2.COLOR_BGR2RGB)
 #    img[dst>0.1*dst.max()]=[0,0,255]
 
     # Blob Centroid Detection
-    img_corners = np.zeros(img.shape, np.float32)
+    img_corners = np.zeros(img_e.shape, np.float32)
     img_corners = cv2.cvtColor(img_corners, cv2.COLOR_BGR2RGB)
     img_corners[dst>0.1*dst.max()]=[0,0,255]
     img_corners = np.uint8(img_corners)
@@ -33,10 +33,12 @@ def corner_detect(img):
     # find contours in the thresholded image
     cnts = cv2.findContours(img_corners.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cnts = imutils.grab_contours(cnts)
-    bl = (img.shape[0], 0)
-    tl = (img.shape[0], img.shape[1])
+    res_w = img_e.shape[0]
+    res_h = img_e.shape[1]
+    bl = (res_w, 0)
+    tl = (res_w, res_h)
     br = (0, 0)
-    tr = (0, img.shape[1])
+    tr = (0, res_h)
     # loop over the contours, keep bottom left and top left coordinates
     for c in cnts:
         # compute the center of the contour
@@ -47,16 +49,16 @@ def corner_detect(img):
         else:
             cX, cY = 0, 0
         # Find bottom left and top left corners
-        if (cX + (img.shape[1]-cY)) < (bl[0] + (img.shape[1]-bl[1])):
+        if (cX + (res_h-cY)) < (bl[0] + (res_h-bl[1])):
             bl = (cX, cY)
         if (cX + cY) < (tl[0] + tl[1]):
             tl = (cX, cY)
         if (cX + cY) > (br[0] + br[1]):
             br = (cX, cY)
-        if ((img.shape[0]-cX) + cY) < (img.shape[0]-(tr[0]) + tr[1]):
+        if ((res_w-cX) + cY) < (res_w-(tr[0]) + tr[1]):
             tr = (cX, cY)
 
-    return tl, tr, bl, br
+    return img_e, tl, tr, bl, br
 
 
 
@@ -90,41 +92,44 @@ def img_classification(img, runner):
 
 ### Lay Flat ###
 def general_lay_flat(img):
+    img_e = edge_detect(img)
     ## Find lowest point
-    # Convert to grayscale
-    img_fl = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    # Edge Detection
-    img_fl = cv2.GaussianBlur(img_fl, (7,7), 0) 
-    img_fl = cv2.Canny(img_fl, 80, 200) # Canny Edge Detection
-    indices = np.where(img_fl == [255])  # Why are these backwards????
+    indices = np.where(img_e == [255])
     if np.any(indices):
         coords = list(zip(indices[1], indices[0]))
         max_y = np.argmax(indices[0])
         img = cv2.circle(img, coords[max_y], 10, (0,0,255), 2)
+        
     return img
 
 
 
 ### Pants ###
-def lay_flat_pants(img):
+def lay_flat_pants(img, view_edge):
     ## Grab waist
-    tl, tr, bl, br = corner_detect(img)
+    img_e, tl, tr, bl, br = corner_detect(img)
+    if view_edge:
+        img = img_e
     cv2.circle(img, tl, 7, (0, 0, 255), -1)
     cv2.circle(img, tr, 7, (0, 0, 255), -1)
     return img
 
-def pants_fold1(img):
+def pants_fold1(img, view_edge):
     ## Fold legs together
-    tl, tr, bl, br = corner_detect(img)
+    img_e, tl, tr, bl, br = corner_detect(img)
+    if view_edge:
+        img = img_e
     cv2.circle(img, bl, 7, (0, 0, 255), -1)
     cv2.circle(img, tl, 7, (0, 0, 255), -1)
     cv2.circle(img, br, 7, (0, 0, 255), -1)
     cv2.circle(img, tr, 7, (0, 0, 255), -1)
     return img
 
-def pants_fold2(img):
+def pants_fold2(img, view_edge):
     ## Fold into quarters
-    tl, tr, bl, br = corner_detect(img)
+    img_e, tl, tr, bl, br = corner_detect(img)
+    if view_edge:
+        img = img_e
     cv2.circle(img, bl, 7, (0, 0, 255), -1)
     cv2.circle(img, tl, 7, (0, 0, 255), -1)
     mid = (round((tl[0]+bl[0])/2),round((tl[1]+bl[1])/2))
@@ -138,21 +143,36 @@ def pants_fold2(img):
 
 
 ### Long-Sleeve Shirts (LSS) ###
-def lay_flat_lss(img):
+def lay_flat_lss(img, view_edge):
     ## Grab waist
-    tl, tr, bl, br = corner_detect(img)
+    img_e, tl, tr, bl, br = corner_detect(img)
+    if view_edge:
+        img = img_e
     cv2.circle(img, tl, 7, (0, 0, 255), -1)
     cv2.circle(img, tr, 7, (0, 0, 255), -1)
     return img
 
-def lss_fold1(img):
+def lss_fold1(img, view_edge):
     ## Grab midpoint of waist and collar
+    img_e, tl, tr, bl, br = corner_detect(img)
+    if view_edge:
+        img = img_e
+    cv2.circle(img, bl, 7, (0, 0, 255), -1)
+    cv2.circle(img, br, 7, (0, 0, 255), -1)
+    waist_mid = (round((bl[0]+br[0])/2),round((bl[1]+br[1])/2))
+    cv2.circle(img, waist_mid, 7, (0, 0, 255), -1)
     return img
 
-def lss_fold2(img):
+def lss_fold2(img, view_edge):
     ## Grab sleeves
+    img_e, tl, tr, bl, br = corner_detect(img)
+    if view_edge:
+        img = img_e
     return img
 
-def lss_fold3(img):
+def lss_fold3(img, view_edge):
     ## Fold into thirds
+    img_e, tl, tr, bl, br = corner_detect(img)
+    if view_edge:
+        img = img_e
     return img
