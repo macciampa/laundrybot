@@ -9,8 +9,8 @@ def edge_detect(img, view_edge):
     img_e = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     img_e = cv2.GaussianBlur(img_e, (7,7), 0) 
     img_e = cv2.Canny(img_e, 80, 200)
-    img_e = cv2.cvtColor(img_e, cv2.COLOR_BGR2RGB)
     indices = np.where(img_e == [255])
+    img_e = cv2.cvtColor(img_e, cv2.COLOR_BGR2RGB)
     img = img_e if view_edge else img
     return img, indices
 
@@ -153,7 +153,7 @@ def lss_fold1(img, view_edge):
         coords = list(zip(indices[1], indices[0]))
         img_mid = int(img.shape[0]/2)
         pts = [t[1] for t in coords if t[0] == img_mid]
-        for y in [*set(pts)]:    # *set() removes duplicates
+        for y in pts:
             img = cv2.circle(img, (img_mid, y), 10, (0,0,255), 2)
     return img
 
