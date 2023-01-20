@@ -160,11 +160,19 @@ def lss_fold1(img, view_edge):
     return img
 
 def lss_fold2(img, view_edge):
-    ## Grab sleeves
+    ## Fold sleeves
     img, tl, tr, bl, br = corner_detect(img, view_edge)
+    cv2.circle(img, tl, 7, (0, 0, 255), -1)
+    cv2.circle(img, br, 7, (0, 0, 255), -1)
     return img
 
 def lss_fold3(img, view_edge):
     ## Fold into thirds
     img, tl, tr, bl, br = corner_detect(img, view_edge)
+    cv2.circle(img, tr, 7, (0, 0, 255), -1)
+    cv2.circle(img, br, 7, (0, 0, 255), -1)
+    p1 = (round((tr[0]*2+br[0])/3),round((tr[1]*2+br[1])/3))
+    p2 = (round((tr[0]+br[0]*2)/3),round((tr[1]+br[1]*2)/3))
+    cv2.circle(img, p1, 7, (0, 0, 255), -1)
+    cv2.circle(img, p2, 7, (0, 0, 255), -1)
     return img
