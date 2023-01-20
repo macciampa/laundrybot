@@ -11,6 +11,7 @@ def edge_detect(img, view_edge):
     img_e = cv2.GaussianBlur(img_e, (7,7), 0) 
     img_e = cv2.Canny(img_e, 80, 200)
     indices = np.where(img_e == [255])
+    img_e = cv2.cvtColor(img_e, cv2.COLOR_GRAY2RGB)
     img = img_e if view_edge else img
     return img, indices
 
@@ -18,10 +19,11 @@ def edge_detect(img, view_edge):
 
 ### Corner Detection ###
 def corner_detect(img, view_edge):
-    img_e, indices = edge_detect(img, True)  # NOTE: Returns grayscale image
+    img_e, indices = edge_detect(img, True)
+    img_e = cv2.cvtColor(img_e, cv2.COLOR_RGB2GRAY)
     img_e = np.float32(img_e)
     dst = cv2.cornerHarris(img_e,30,13,0.04)
-    dst = cv2.dilate(dst,None)    # result is dilated for marking the corners, not important
+    dst = cv2.dilate(dst,None)
     img_e = cv2.cvtColor(img_e, cv2.COLOR_BGR2RGB)
 #    img[dst>0.1*dst.max()]=[0,0,255]
 
@@ -96,8 +98,7 @@ def img_classification(img, runner):
 
 ### Lay Flat ###
 def general_lay_flat(img, view_edge):
-    img, indices = edge_detect(img, view_edge)  # NOTE: Returns grayscale image
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    img, indices = edge_detect(img, view_edge)
     ## Find lowest point
     if np.any(indices):
         coords = list(zip(indices[1], indices[0]))
@@ -149,8 +150,7 @@ def lay_flat_lss(img, view_edge):
 
 def lss_fold1(img, view_edge):
     ## Grab midpoint of waist and collar
-    img, indices = edge_detect(img, view_edge)  # NOTE: Returns grayscale image
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    img, indices = edge_detect(img, view_edge)
     if np.any(indices):
         coords = list(zip(indices[1], indices[0]))
         img_mid = int(img.shape[0]/2)

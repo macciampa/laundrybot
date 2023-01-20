@@ -7,7 +7,7 @@ cam, runner = init_bot()
 aa_size     = 5    # size of average array for classification
 conf_ratio  = 0.4  # confidence ratio for classification
 fps         = 0
-curr_mode   = "lss_fold1"
+curr_mode   = "lay_flat"
 view_edge   = False  # view edge detect instead of normal image
 
 while True:
