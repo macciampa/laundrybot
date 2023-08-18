@@ -19,7 +19,8 @@ pip install pyaudio
 pip install imutils
 ```
 3. If using WSL, add USB support by following directions from here: <br />
-https://learn.microsoft.com/en-us/windows/wsl/connect-usb
+    - https://learn.microsoft.com/en-us/windows/wsl/connect-usb <br />
+    - https://github.com/Katzeee/Notes/blob/860c813c835edf2d10fed2700dc98bfd21d66eba/Windows/wsl2-using-usb-webcam.md#L4
 4. Download model file - Run the following command and follow the instructions:
 ```
 edge-impulse-linux-runner
